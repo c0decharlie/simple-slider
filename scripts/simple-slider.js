@@ -12,6 +12,12 @@
     Slider.prototype.findSlides = function () {
         var $slides = this.element.querySelectorAll('li');
         Array.from($slides).forEach(i => this.slides.push(i));
+        this.showFirstSlide();
+    };
+
+    Slider.prototype.showFirstSlide = function () {
+        this.slides[0].classList.add('active');
+        this.current = 1;
     };
 
     Slider.prototype.setPreviousSlide = function () {
@@ -21,9 +27,17 @@
     };
 
     Slider.prototype.changeSlide = function (current, prev) {
+        this.slideInterim(prev);
         current.classList.add('active');
         prev.classList.remove('active');
         this.setCurrentSlide();
+    };
+
+    Slider.prototype.slideInterim = function (prev) {
+        var interimSlide = this.element.querySelector('.interim');
+        if (interimSlide !== null && interimSlide.classList.contains('interim'))
+            this.element.querySelector('.interim').classList.remove('interim');
+        prev.classList.add('interim');
     };
 
     Slider.prototype.setCurrentSlide = function () {

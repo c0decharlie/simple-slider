@@ -18,5 +18,11 @@
 
 .active {
     opacity: 1;
+    z-index:10;
     transition: all 0.3s linear;
+}
+
+.interim {
+    opacity:1;
+    z-index: 0;
 }
