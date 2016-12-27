@@ -8,6 +8,7 @@
         this.slides = [];
         this.current = 0;
         this.slideInterval = null;
+        this.duration = 3000;
     }
 
     Slider.prototype.findSlides = function () {
@@ -51,6 +52,7 @@
     Slider.prototype.next = function (event) {
         if (event !== undefined) {
             this.clearInterval(this.slideInterval);
+            this.changer();
         }
         var slides = this.setSlideOrder();
         this.changeSlide(slides[0], slides[1]);
@@ -60,6 +62,7 @@
     Slider.prototype.prev = function (event) {
         if (event !== undefined) {
             this.clearInterval(this.slideInterval);
+            this.changer();
         }
         this.decrementSlide();
         var slides = this.setSlideOrder();
@@ -72,6 +75,7 @@
         this.createDOMElement('button', 'prev', this.wrapper.querySelector('.slider-nav'), 'prev');
         this.eventAttach('.next', 'click', this.next.bind(this));
         this.eventAttach('.prev', 'click', this.prev.bind(this));
+        this.createDOMElement('button', 'stop', this.wrapper.querySelector('.slider-nav'), 'stop');
     };
 
     Slider.prototype.createDOMElement = function (element, elementClass, parent, inner) {
@@ -91,15 +95,15 @@
         clearInterval(this.slideInterval);
     };
 
-    Slider.prototype.changer = function (duration) {
-        this.slideInterval = setInterval(() => this.next(), duration);
+    Slider.prototype.changer = function () {
+        this.slideInterval = setInterval(() => this.next(), this.duration);
     };
 
     Slider.prototype.setup = function (duration) {
-        duration = duration || 3000;
+        this.duration = duration || this.duration;
         this.findSlides();
         this.createNav();
-        this.changer(duration);
+        this.changer();
     };
 
     root.Slider = Slider;
