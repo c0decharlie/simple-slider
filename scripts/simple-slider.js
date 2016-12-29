@@ -6,6 +6,8 @@
         if (this.wrapper === null)
             throw new Error('There\'s no selector with such id!');
         this.slides = [];
+        this.sliderNav = null;
+        this.paginationDots = [];
         this.current = 0;
         this.slideInterval = null;
         this.duration = 3000;
@@ -14,12 +16,12 @@
     Slider.prototype.findSlides = function () {
         var $slides = this.wrapper.querySelectorAll('li');
         Array.from($slides).forEach(i => this.slides.push(i));
-        this.showFirstSlide();
     };
 
     Slider.prototype.showFirstSlide = function () {
         this.slides[0].classList.add('active');
         this.current = 1;
+        this.updateDot();
     };
 
     Slider.prototype.setSlideOrder = function () {
@@ -57,6 +59,7 @@
         var slides = this.setSlideOrder();
         this.changeSlide(slides[0], slides[1]);
         this.incrementSlide();
+        this.updateDot();
     };
 
     Slider.prototype.prev = function (event) {
@@ -67,15 +70,39 @@
         this.decrementSlide();
         var slides = this.setSlideOrder();
         this.changeSlide(slides[1], slides[0]);
+        this.updateDot();
     };
 
     Slider.prototype.createNav = function() {
         this.createDOMElement('div', 'slider-nav', this.wrapper);
-        this.createDOMElement('button', 'next', this.wrapper.querySelector('.slider-nav'), 'next');
-        this.createDOMElement('button', 'prev', this.wrapper.querySelector('.slider-nav'), 'prev');
+        this.sliderNav = this.wrapper.querySelector('.slider-nav');
+        this.createDOMElement('button', 'next', this.sliderNav, 'next');
+        this.createDOMElement('button', 'prev', this.sliderNav, 'prev');
+        this.createDOMElement('div', 'pagination', this.sliderNav);
         this.eventAttach('.next', 'click', this.next.bind(this));
         this.eventAttach('.prev', 'click', this.prev.bind(this));
-        this.createDOMElement('button', 'stop', this.wrapper.querySelector('.slider-nav'), 'stop');
+        this.createPagination(this.sliderNav.querySelector('.pagination'));
+    };
+
+    Slider.prototype.createPagination = function (parent) {
+        for (var i = 0; i < this.slides.length; i++) {
+            this.createDOMElement('a', 'dot', parent);
+        }
+        this.createDotCollection(parent);
+    };
+    
+    Slider.prototype.createDotCollection = function (parent) {
+        var dots = parent.querySelectorAll('.dot');
+        Array.from(dots).forEach((a) => { this.paginationDots.push(a)});
+    };
+
+    Slider.prototype.updateDot = function () {
+        var activeDot = this.sliderNav.querySelector('.current');
+
+        if(activeDot !== null)
+            activeDot.classList.remove('current');
+
+        this.paginationDots[this.current].classList.add('current');
     };
 
     Slider.prototype.createDOMElement = function (element, elementClass, parent, inner) {
@@ -103,6 +130,7 @@
         this.duration = duration || this.duration;
         this.findSlides();
         this.createNav();
+        this.showFirstSlide();
         this.changer();
     };
 
